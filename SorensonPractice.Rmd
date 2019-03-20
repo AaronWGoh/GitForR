@@ -1,0 +1,152 @@
+---
+title: "SorensonPractice"
+author: "AaronGoh"
+date: "March 18, 2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+
+```{r mtcars}
+library(tidyverse)
+library(expss)
+
+summary(mtcars)
+
+
+data(mtcars)
+mtcars = apply_labels(mtcars,
+                      mpg = "Miles/(US) gallon",
+                      cyl = "Number of cylinders",
+                      disp = "Displacement (cu.in.)",
+                      hp = "Gross horsepower",
+                      drat = "Rear axle ratio",
+                      wt = "Weight (1000 lbs)",
+                      qsec = "1/4 mile time",
+                      vs = "Engine",
+                      vs = c("V-engine" = 0,
+                             "Straight engine" = 1),
+                      am = "Transmission",
+                      am = c("Automatic" = 0,
+                             "Manual"=1),
+                      gear = "Number of forward gears",
+                      carb = "Number of carburetors"
+)
+
+# Gear Table Frequencies
+mtcars
+
+mtcars %>% 
+  group_by(gear) %>% 
+  count()
+  
+
+# Carb Table Frequencies
+mtcars %>% 
+  group_by(carb) %>% 
+  count()
+
+# Table of the unique engine values
+mtcars %>% 
+  group_by(vs) %>%
+  distinct(vs) 
+
+# # Table of the unique "Automatic", "Manual" 
+# mtcars.am <- as.character(unique(mtcars$am))
+# mtcars.am
+
+# Cross Validation table of cyl by gear
+mtcars %>% 
+  group_by(gear, cyl)%>%
+  summarise(n=n())%>%
+  spread(cyl, n)
+
+# Cross Validation table of cyl by am
+mtcars %>% 
+  group_by(am, cyl)%>%
+  summarise(n=n())%>%
+  spread(cyl, n)
+
+# Cross Validation table of cyl by vs
+mtcars %>% 
+  group_by(vs, cyl)%>%
+  summarise(n=n())%>%
+  spread(cyl, n)
+
+mtcars %>% 
+  group_by(vs, cyl)%>%
+  summarise(n=n())%>%
+  spread(cyl, n)
+
+
+# # Cross Validation table of cyl by gear
+# mtcars.tab.cyl_by_gear <- cro(mtcars$gear, mtcars$cyl)
+# mtcars.tab.cyl_by_gear
+
+# # Cross validiation table of cyl by am
+# mtcars.tab.cyl_by_am <- cro(mtcars$am, mtcars$cyl)
+# mtcars.tab.cyl_by_am
+
+# # Cross validation table of cyl by vs
+# mtcars.tab.cyl_by_vs <- cro(mtcars$vs, mtcars$cyl)
+# mtcars.tab.cyl_by_vs
+
+# Histogram of wt
+ggplot(mtcars, aes(wt)) + geom_histogram(bins=6)
+
+# Histogram of mpg
+ggplot(mtcars, aes(mpg)) + geom_histogram(bins=6)
+
+# Histogram of qsec 
+ggplot(mtcars, aes(qsec)) + geom_histogram(bins=6)
+
+# Histogram of hp
+ggplot(mtcars, aes(hp)) + geom_histogram(bins=6)
+
+
+# Plot of mean mpg by cyl
+mtcars %>% 
+  group_by(cyl) %>% 
+  summarise(mean_mpg = mean(mpg))
+
+
+# # Table of Mean MPG by cyl
+# mtcars.tab.mean_mpg_by_cyl <- cro(mtcars$cyl, mean(mtcars$mpg))
+# mtcars.tab.mean_mpg_by_cyl
+
+
+mtcars %>% 
+  group_by(cyl) %>% 
+  summarise(mean_mpg = mean(mpg)) %>%
+  ggplot(aes(x = cyl, y = mean_mpg))+
+  geom_point()
+
+# Plot of mean wt by cyl
+mtcars %>% 
+  group_by(cyl) %>% 
+  summarise(mean_wt = mean(wt)) %>%
+  ggplot(aes(x = cyl, y = mean_wt))+
+  geom_point()
+
+
+# Plot of mean hp by cyl
+
+mtcars %>% 
+  group_by(cyl) %>% 
+  summarise(mean_hp = mean(hp)) %>%
+  ggplot(aes(x = cyl, y = mean_hp))+
+  geom_point()
+
+```
