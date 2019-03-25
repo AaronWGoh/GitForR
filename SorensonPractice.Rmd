@@ -27,23 +27,23 @@ summary(mtcars)
 
 
 data(mtcars)
-mtcars = apply_labels(mtcars,
-                      mpg = "Miles/(US) gallon",
-                      cyl = "Number of cylinders",
-                      disp = "Displacement (cu.in.)",
-                      hp = "Gross horsepower",
-                      drat = "Rear axle ratio",
-                      wt = "Weight (1000 lbs)",
-                      qsec = "1/4 mile time",
-                      vs = "Engine",
-                      vs = c("V-engine" = 0,
-                             "Straight engine" = 1),
-                      am = "Transmission",
-                      am = c("Automatic" = 0,
-                             "Manual"=1),
-                      gear = "Number of forward gears",
-                      carb = "Number of carburetors"
-)
+# mtcars = apply_labels(mtcars,
+#                       mpg = "Miles/(US) gallon",
+#                       cyl = "Number of cylinders",
+#                       disp = "Displacement (cu.in.)",
+#                       hp = "Gross horsepower",
+#                       drat = "Rear axle ratio",
+#                       wt = "Weight (1000 lbs)",
+#                       qsec = "1/4 mile time",
+#                       vs = "Engine",
+#                       vs = c("V-engine" = 0,
+#                              "Straight engine" = 1),
+#                       am = "Transmission",
+#                       am = c("Automatic" = 0,
+#                              "Manual"=1),
+#                       gear = "Number of forward gears",
+#                       carb = "Number of carburetors"
+# )
 
 # Gear Table Frequencies
 mtcars
@@ -63,8 +63,18 @@ mtcars %>%
   group_by(vs) %>%
   distinct(vs) 
 
+
+mtcars %>% 
+  mutate(am1 = case_when(am == 0~"Automatic",
+                        am == 1~"Manual",
+                        TRUE~"NA")) %>% 
+  distinct(am1)
+
 # # Table of the unique "Automatic", "Manual" 
 # mtcars.am <- as.character(unique(mtcars$am))
+# mtcars.am
+
+# mtcars.am <- unique(mtcars$am)
 # mtcars.am
 
 # Cross Validation table of cyl by gear
@@ -87,7 +97,7 @@ mtcars %>%
 
 mtcars %>% 
   group_by(vs, cyl)%>%
-  summarise(n=n())%>%
+  summarise(n=n())%>%x
   spread(cyl, n)
 
 
@@ -142,7 +152,6 @@ mtcars %>%
 
 
 # Plot of mean hp by cyl
-
 mtcars %>% 
   group_by(cyl) %>% 
   summarise(mean_hp = mean(hp)) %>%
