@@ -33,15 +33,14 @@ ui <- ## Body content
 
 # Define server logic
 server <- function(input, output) {
-  # Experimenting on making code below more generic
-  # for (x in 1:4) {local({
-  #   i <- x
+  # # Experimenting on making code below more generic
+  # for (element.id in output) {local({
   #   output[[paste('result', i, sep='')]] <- reactive(function(){
-  #     if (input[[paste('run', i, sep='')]] == 0)
-  #       return()
-  #     return(isolate({
-  #       runCode(input[[paste('code', i, sep='')]])
-  #     }))
+  #     if (input$boxId == "1") {
+  #             box(title = element.id, width = 4, height = 80, solidHeader = TRUE, status = "primary", align = "center", icon("ok", lib = "glyphicon"))
+  #           } else {
+  #             box(title = element.id, width = 4, height = 80, solidHeader = TRUE, status = "primary")
+  #           }
   #   })
   # })}
   
