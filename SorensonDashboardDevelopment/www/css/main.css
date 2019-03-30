@@ -1,0 +1,15 @@
+#standard-box {
+    text-align:center;
+    border-style: solid;
+    border-width: thin;
+    margin-left: -1px;
+    margin-top: -1px;
+}
+
+.row {
+  display: flex;
+  display: -webkit-flex;
+  flex-wrap: wrap;
+}
+
+
