@@ -118,7 +118,7 @@ ui <- ## Body content
     body
   )
 
-###############################3
+###############################
 
 # Define server logic
 server <- function(input, output) {
