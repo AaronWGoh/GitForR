@@ -1,15 +1,145 @@
-#standard-box {
+#imageInfo {
+    margin-left: 0px;
+}
+
+
+/* Centers the text properly inside the boxes */
+#standard-box .content, #long-box .content {
+    display: flex;
+    justify-content: center;
     text-align:center;
-    border-style: solid;
-    border-width: thin;
-    margin-left: -1px;
-    margin-top: -1px;
+    vertical-align: middle;
+    
+    padding-left: 0;
+    padding-right: 0;
+    
+    font-size: 1.20vh;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+}
+
+
+/* Centers the text properly inside the boxes */
+#standard-box.row1 .content, #standard-box.row2 .content, #standard-box.row4 .content {
+    margin-top: 15px;
+}
+
+#standard-box.row3 .icon-content, #standard-box.row4 .icon-content {
+    margin-top: 15px;
+}
+
+#standard-box .icon-content, #long-box .icon-content {
+  font-size: 3vh;
+}
+
+#standard-box .p, #long-box .p{
+    width: inherit;
+    height: inherit;
+}
+
+#standard-box:before, #long-box:before{
+    display: block;
+    padding-top: 100%;  
 }
 
 .row {
-  display: flex;
-  display: -webkit-flex;
-  flex-wrap: wrap;
+    display: flex;
+    display: -webkit-flex;
+    flex-wrap: wrap;
 }
+
+#standard-box, #long-box {
+    border-color: black;
+}
+
+#standard-box {
+    min-height: 90px;
+    max-height: 90px;
+
+    min-width: 90px;
+    max-width: 90px;
+}
+
+#long-box {
+    min-height: 90px;
+    max-height: 90px;
+    
+    min-width: 270px;
+    max-width: 270px;
+}
+
+#standard-box.row1, #standard-box.row2, #standard-box.row3, #standard-box.row4, #long-box.row4 {
+  border-top-style: solid;
+  border-top-width: thin;
+}
+
+#standard-box.row4, #long-box.row4 {
+  border-bottom-style: solid;
+  border-bottom-width: thin;
+}
+
+#standard-box.col1, #standard-box.col2, #standard-box.col3, #standard-box.col4, #long-box.col2 {
+  border-left-style: solid;
+  border-left-width: thin;
+  border-color: black;
+}
+
+#standard-box.col4, #long-box.col2 {
+  border-right-style: solid;
+  border-right-width: thin;
+  border-color: black;
+}
+
+/* Healthy Beginning
+Bright Yellow */
+#standard-box.row1.label1 {
+    background-color:#FFFF00;
+}
+
+/* Supported Families
+Dark Orange 
+https://www.rapidtables.com/web/color/orange-color.html */
+#standard-box.row1.label2 {
+  background-color:#FF8C00;
+}
+
+/* Quality Care and Learning
+Bright Green
+http://www.perbang.dk/rgb/4CFF8C/ */
+#standard-box.row1.label3 {
+    background-color:#4CFF8C;
+}
+
+/* Child and Family Outcomes
+Tealish color 
+https://www.w3schools.com/colors/colors_picker.asp */
+#standard-box.row2.label1 {
+    background-color:#00bfff;
+}
+
+/* Prental to Three Program and Policy Expansion 
+Hot Pink 
+https://www.rapidtables.com/web/color/pink-color.html */
+#standard-box.row3.label1 {
+  background-color:#FF1493;	
+}
+
+/* Prenetal to Three Systems 
+Slate Blue 
+https://www.rapidtables.com/web/color/blue-color.html */
+#standard-box.row4.label1 {
+    background-color:#6A5ACD;
+}
+
+
+/* Set the columns on the left to be white colored */
+#standard-box.row2.label1, #standard-box.row3.label1, #standard-box.row4.label1 {
+    color: #FFFFFF;
+}
+
+
+
+
 
 
