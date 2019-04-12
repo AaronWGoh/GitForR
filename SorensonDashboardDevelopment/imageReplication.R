@@ -30,7 +30,7 @@ body <- dashboardBody(
     br(), #Space out between the dropdown
     
     #Creates two rows with 2 boxes per row
-    tags$div(class="container", id="imageInfo",
+    tags$div(class="container-fluid", id="imageInfo",
       fluidRow(
         tags$div(id="standard-box", class = "col-3 row1 col1 box1"),
         tags$div(id="standard-box", class = "col-3 row1 col2 label1 box2",

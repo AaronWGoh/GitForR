@@ -1,0 +1,323 @@
+---
+title: "Dashboard charts"
+output: html_document
+---
+
+```{r}
+
+library(siverse)
+library(tidyverse)
+library(googlesheets)
+library(leaflet)
+library(billboarder)
+library(plotly)
+library(scales)
+```
+
+
+```{r}
+
+load("~/Google Drive/SI/DataScience/Pritzker/Dashboard/dash.rda")
+
+load("~/Google Drive/SI/DataScience/Pritzker/Community Assessment Tool/CDC Wonder Data/cdc wonder.RData")
+
+load("~/Google Drive/SI/DataScience/Pritzker/ACS Data/acs_lst.RData")
+
+load("~/Google Drive/SI/DataScience/Pritzker/Community Assessment Tool/CDC Wonder Data/cdc wonder.RData")
+
+load("~/Google Drive/SI/DataScience/Pritzker/ACS Data/acs_employ_femchild_lst.RData")
+load("~/Google Drive/SI/DataScience/Pritzker/ACS Data/acs_educ_over25years_lst.RData")
+load("~/Google Drive/SI/DataScience/Pritzker/ACS Data/acs_ethnicity_lst.RData")
+load("~/Google Drive/SI/DataScience/Pritzker/ACS Data/acs_snap_households_childunder18_lst.RData")
+load("~/Google Drive/SI/DataScience/Pritzker/ACS Data/acs_povrace_lst.RData")
+
+```
+
+
+
+
+```{r}
+dash_city <- dash %>% 
+  filter(!is.na(city)) %>% 
+  select(community, city, county, state, partner) %>% 
+  distinct()
+
+dash_county <- dash %>% 
+  filter(is.na(city)) %>% select(community, city, county, state, partner) %>% 
+  distinct()
+
+
+```
+
+
+```{r Births}
+
+dash_births <- left_join(dash, births_deaths) %>% 
+  select(community,city, state, county,partner, year, births, data)
+
+dash_births %>% distinct(community)
+
+#save(dash_births, file = "~/Google Drive/SI/DataScience/Pritzker/Dashboard/dash_births.rda")
+
+plot <- dash_births %>% 
+  filter(city == "Spartanburg") %>%
+    select(Year = year, data, Births = births) %>% 
+  filter(!is.na(Births)) %>% 
+  mutate(Births = as.numeric(Births),
+         data = str_to_title(data)) %>% 
+  distinct() %>% 
+  spread(data, Births)
+
+ p <- plot_ly(data = plot, x =~Year, y = ~`All Births`, type = 'scatter', mode = 'lines+markers', 
+                 line= list(color= 'rgb(165,0,80)', width =2.5), 
+                 marker = list(color= 'rgb(165,0,80)', width =3), 
+                 name = 'All Births',
+                 hoverinfo = "x+y") %>% 
+   add_trace(y=~`Low Birth Weight Under 2500 Grams`, line = list(color= 'rgb(0,178,169)'), 
+            marker = list(color= 'rgb(0,178,169)'),
+            name = 'Low Birth Weight Under 2500 Grams') %>% 
+   add_trace(y=~`Mother Under 18`, line = list(color= 'rgb(255,103,31)'), 
+            marker = list(color= 'rgb(255,103,31)'),
+            name = 'Mother Under 18') %>% 
+   add_trace(y=~`Premature Births Before 37 Weeks`, line = list(color= 'rgb(118,134,146)'), 
+            marker = list(color= 'rgb(118,134,146)'),
+            name = 'Premature Births Before 37 Weeks') %>% 
+   layout(yaxis = list(title = " No. of Births"),
+         xaxis = list(title = "Year"))
+   
+ 
+ p
+
+```
+
+
+```{r Race}
+
+
+place <- acs_lst$place
+
+race_county <- acs_lst$county %>% 
+  select(county, state, contains("race")) %>% gather(key = key, value = n, -state, -county) %>% separate(key, into = c("var", "age", "unit", "race"), sep = "\\.") %>% filter(age == "allages") %>% 
+  filter(race != "hispanic") %>% 
+  filter(race!="nonhispanicwhite") %>% 
+  select(county, state, race,n)
+
+
+race_city <- place %>% select(city, county, state, contains("race")) %>% gather(key = key, value = n, -city, -state, -county) %>% separate(key, into = c("var", "age", "unit", "race"), sep = "\\.") %>% filter(age == "allages") %>% 
+  filter(race != "hispanic") %>% 
+  filter(race!="nonhispanicwhite") %>% 
+  select(city, county, state, race,n)
+
+left_join(dash_county,race_county)%>% 
+  distinct(county)
+
+dash_county %>% 
+  distinct(county)
+
+df <- place %>% 
+  filter(city == "Austin", state == "TX") %>% 
+  select(contains("race")) %>% 
+  gather(key = key, value = n)%>% 
+  separate(key, into = c("var", "age", "unit", "race"), sep = "\\.") %>% 
+  filter(age == "allages") %>% 
+  filter(race != "hispanic") %>% 
+  filter(race!="nonhispanicwhite") %>% 
+  select(race, n)
+
+
+billboarder() %>% 
+  bb_donutchart(data = df) %>% 
+  bb_donut()#chart prop here)
+
+library(tidycensus)
+
+data(fips_codes)
+
+names(fips_codes)
+
+acs_lst$county
+
+
+
+dash_county %>% distinct(county)
+
+test <- left_join(dash_city, race_city, by = c("city", "state"))
+test2 <- left_join(dash_county, race_county, by = c("county", "state"))
+
+dash_race <- bind_rows(test, test2)
+
+save(dash_race, file = "~/Google Drive/SI/DataScience/Pritzker/Dashboard/dash_race.rda")
+
+dash_race %>% distinct(community)
+
+test %>% 
+  distinct(city)
+
+sum(is.na(test2))
+
+```
+
+
+
+```{r ethnicity}
+
+acs_ethn_city <- acs_ethnicity_lst$place %>% filter(value_type == "estimate") %>% 
+  mutate(value = as.numeric(value),
+         ethnicity = str_replace_all(ethnicity, "\\.", " ")) %>% 
+  select(ethnicity, value, state, city)
+
+df_e1 <- left_join(dash_city,acs_ethn_city)
+
+df_e1 %>% distinct(city)
+
+
+
+acs_ethn_county <- acs_ethnicity_lst$county%>% filter(value_type == "estimate") %>% 
+  mutate(value = as.numeric(value),
+         ethnicity = str_replace_all(ethnicity, "\\.", " ")) %>% 
+  select(ethnicity, value, state, county)
+
+df_e2 <- left_join(dash_county,acs_ethn_county)
+
+df_e2 %>% distinct(county)
+
+sum(is.na(df_e1))
+
+dash_ethnicity <- bind_rows(df_e1, df_e2)
+
+save(dash_ethnicity, file = "~/Google Drive/SI/DataScience/Pritzker/Dashboard/dash_ethnicity.rda")
+
+plot <- dash_ethnicity %>% 
+  filter(community == "Spartanburg") %>% 
+  select(ethnicity, value) 
+
+billboarder() %>% 
+  bb_donutchart(data = plot)
+
+
+
+```
+
+
+
+
+```{r Poverty}
+
+pov_city <- acs_lst$place %>% 
+  select(city, county, state, contains("pov"), -contains(".pct."), -contains(".log."), -contains("total")) %>% gather(key = key, value = n, -city, -county, -state) %>% 
+  mutate(key = str_remove(key, ".num")) %>% 
+  separate(key, into = c("var", "age", "ratio")) %>% 
+  select(city, county, state, age, ratio, n)
+
+pov_county <- acs_lst$county %>% 
+  select(county, state, contains("pov"), -contains(".pct."), -contains(".log."), -contains("total")) %>% gather(key = key, value = n,  -county, -state) %>% 
+  mutate(key = str_remove(key, ".num")) %>% 
+  separate(key, into = c("var", "age", "ratio")) %>% 
+  select(county, state, age, ratio, n)
+
+df_p1 <- left_join(dash_city, pov_city, by = c("city", "state"))
+sum(is.na(df_p1))
+
+df_p2 <- left_join(dash_county, pov_county)
+sum(is.na(df_p2))
+
+dash_pov <- bind_rows(df_p1, df_p2)
+
+save(dash_pov, file = "~/Google Drive/SI/DataScience/Pritzker/Dashboard/dash_pov.rda")
+
+plot <- dash_pov %>% 
+  filter(community == "Austin") %>% 
+  filter(age == "allages") %>% 
+  select(ratio,n)
+
+billboarder() %>% 
+ bb_barchart(data = plot,  rotated = TRUE, mapping = bbaes(ratio, n, group = ratio), stacked = T)
+
+```
+
+
+
+```{r Employment}
+
+emp_city <- acs_employ_femchild_lst$place %>% 
+filter(child_age == "Under.6.years.only", !is.na(labor_force), value_type == "estimate.B23003") %>% select(city, county, state, labor_force, mil_civ, employed, value) %>% 
+  filter(!(labor_force == "In.labor.force" & is.na(mil_civ))) %>% 
+  filter(!(labor_force == "In.labor.force" & mil_civ == "Civilian" & is.na(employed))) %>% 
+  arrange(labor_force, mil_civ) %>% 
+  mutate(value = as.numeric(value)) %>% 
+  unite("employment", c("labor_force", "mil_civ", "employed" )) 
+
+df_emp1 <- left_join(dash_city, emp_city, by = c("city", "state"))
+  
+
+emp_county <- acs_employ_femchild_lst$county %>% 
+filter(child_age == "Under.6.years.only", !is.na(labor_force), value_type == "estimate.B23003") %>% select( county, state, labor_force, mil_civ, employed, value) %>% 
+  filter(!(labor_force == "In.labor.force" & is.na(mil_civ))) %>% 
+  filter(!(labor_force == "In.labor.force" & mil_civ == "Civilian" & is.na(employed))) %>% 
+  arrange(labor_force, mil_civ) %>% 
+  mutate(value = as.numeric(value)) %>% 
+  unite("employment", c("labor_force", "mil_civ", "employed" )) 
+
+df_emp2 <- left_join(dash_county, emp_county)
+
+dash_employment <- bind_rows(df_emp1, df_emp2) %>% 
+  mutate(employment = case_when(employment == "In.labor.force_Civilian_Employed"~"Employed",
+                                employment == "In.labor.force_Civilian_Unemployed"~"Unemployed",
+                                employment == "In.labor.force_In.Armed.Forces_NA"~"In Armed Forces",
+                                employment == "Not.in.labor.force_NA_NA"~"Not in Labor Force"))
+
+save(dash_employment, file = "~/Google Drive/SI/DataScience/Pritzker/Dashboard/dash_employment.rda")
+
+plot <- dash_employment %>% 
+  filter(community == "Austin") %>% 
+  select(employment, value) 
+
+billboarder() %>% 
+ bb_barchart(data = plot,  mapping = bbaes(employment, value, group = employment), stacked = T)
+
+
+```
+
+
+```{r Education}
+
+ 
+
+
+
+```
+
+
+
+```{r SNAP} 
+
+sn_city <- acs_snap_households_childunder18_lst$place %>% 
+  filter(value_type != "se", children == "With.children.under.18.years") %>% 
+  select(city, state, county, receipt, value)  
+
+df_sn1 <- left_join(dash_city, sn_city, by = c("city", "state"))
+ 
+
+sn_county <- acs_snap_households_childunder18_lst$county %>% 
+  filter(value_type != "se", children == "With.children.under.18.years") %>% 
+  select(state, county, receipt, value) 
+
+df_sn2 <- left_join(dash_county, sn_county)
+
+dash_snap <- bind_rows(df_sn1, df_sn2)
+
+save(dash_snap, file = "~/Google Drive/SI/DataScience/Pritzker/Dashboard/dash_snap.rda")
+
+plot <- dash_snap %>% 
+  filter(community=="Austin") %>% 
+  spread(receipt, value) %>% 
+  mutate(Household.received.Food.Stamps.SNAP.in.the.past.12.months = as.numeric(Household.received.Food.Stamps.SNAP.in.the.past.12.months),
+         Household.did.not.receive.Food.Stamps.SNAP.in.the.past.12.months = as.numeric(Household.did.not.receive.Food.Stamps.SNAP.in.the.past.12.months)) %>% 
+  mutate(perc = Household.received.Food.Stamps.SNAP.in.the.past.12.months/sum(Household.received.Food.Stamps.SNAP.in.the.past.12.months, Household.did.not.receive.Food.Stamps.SNAP.in.the.past.12.months)*100)  %>% 
+  select(perc)
+
+billboarder() %>% 
+  bb_gaugechart(value = plot$perc)
+  
+```
+
